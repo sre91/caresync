@@ -7,6 +7,7 @@ import connectDB from "./config/db";
 import errorHandler from "./middleware/errorHandler";
 import authRoutes from "./routes/auth.routes";
 import doctorRoutes from "./routes/doctor.routes";
+import appointmentRoutes from "./routes/appointment.routes";
 
 // Load environment variables
 dotenv.config();
@@ -27,6 +28,9 @@ app.use(morgan("dev"));
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/doctors", doctorRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/doctors", doctorRoutes);
+app.use("/api/appointments", appointmentRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.json({
