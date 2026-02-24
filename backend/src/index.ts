@@ -5,6 +5,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import connectDB from "./config/db";
 import errorHandler from "./middleware/errorHandler";
+import authRoutes from "./routes/auth.routes";
 
 // Load environment variables
 dotenv.config();
@@ -20,7 +21,10 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 
-// Test route
+//routes
+
+app.use("/api/auth", authRoutes);
+
 app.get("/", (req: Request, res: Response) => {
   res.json({
     success: true,
