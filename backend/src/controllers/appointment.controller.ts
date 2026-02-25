@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Appointment from "../models/Appointment.model";
 import Doctor from "../models/Doctor.model";
 
-// ── Book Appointment ──────────────────────
+// Book Appointment
 // Only patients can book
 export const bookAppointment = async (req: any, res: Response) => {
   try {
@@ -75,7 +75,7 @@ export const bookAppointment = async (req: any, res: Response) => {
   }
 };
 
-// ── Get Patient Appointments ──────────────
+// Get Patient Appointments
 // Patient sees their own appointments
 export const getPatientAppointments = async (req: any, res: Response) => {
   try {
@@ -99,7 +99,7 @@ export const getPatientAppointments = async (req: any, res: Response) => {
   }
 };
 
-// ── Get Doctor Appointments ───────────────
+// Get Doctor Appointments
 // Doctor sees their own appointments
 export const getDoctorAppointments = async (req: any, res: Response) => {
   try {
@@ -130,7 +130,7 @@ export const getDoctorAppointments = async (req: any, res: Response) => {
   }
 };
 
-// ── Get Single Appointment ────────────────
+// Get Single Appointment
 export const getAppointmentById = async (req: any, res: Response) => {
   try {
     const appointment = await Appointment.findById(req.params.id)
@@ -160,7 +160,7 @@ export const getAppointmentById = async (req: any, res: Response) => {
   }
 };
 
-// ── Update Appointment Status ─────────────
+// Update Appointment Status
 // Doctor can confirm or complete
 // Patient can cancel
 export const updateAppointmentStatus = async (req: any, res: Response) => {
@@ -201,7 +201,7 @@ export const updateAppointmentStatus = async (req: any, res: Response) => {
   }
 };
 
-// ── Delete Appointment ────────────────────
+// Delete Appointment
 // Only admin can delete
 export const deleteAppointment = async (req: any, res: Response) => {
   try {
