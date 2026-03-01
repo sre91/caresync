@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import PatientDashboard from "./pages/PatientDashboard";
 import DoctorDashboard from "./pages/DoctorDashboard";
+import Doctors from "./pages/Doctors";
 
 function App() {
   const { isLoading } = useAuth();
@@ -65,6 +66,7 @@ function App() {
 
         <Route path="/patient/dashboard" element={<PatientDashboard />} />
         <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+        <Route path="/doctors" element={<Doctors />} />
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

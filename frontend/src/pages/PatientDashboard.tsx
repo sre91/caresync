@@ -112,7 +112,7 @@ const PatientDashboard = () => {
       <div className="mb-6">
         <Button
           className="bg-blue-600 hover:bg-blue-700"
-          onClick={() => setShowBooking(true)}
+          onClick={() => navigate("/doctors")}
         >
           + Book New Appointment
         </Button>
