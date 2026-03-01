@@ -1,5 +1,12 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 function App() {
   const { isLoading } = useAuth();
@@ -49,6 +56,33 @@ function App() {
             </div>
           }
         />
+
+        {/* Auth Pages */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+
+        <Route
+          path="/patient/dashboard"
+          element={
+            <div className="flex items-center justify-center min-h-screen bg-gray-950">
+              <h1 className="text-3xl text-white">
+                Patient Dashboard - Coming Soon!
+              </h1>
+            </div>
+          }
+        />
+        <Route
+          path="/doctor/dashboard"
+          element={
+            <div className="flex items-center justify-center min-h-screen bg-gray-950">
+              <h1 className="text-3xl text-white">
+                Doctor Dashboard - Coming Soon!
+              </h1>
+            </div>
+          }
+        />
+
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );
