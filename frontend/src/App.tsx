@@ -7,6 +7,7 @@ import {
 import { useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import PatientDashboard from "./pages/PatientDashboard";
 
 function App() {
   const { isLoading } = useAuth();
@@ -61,16 +62,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        <Route
-          path="/patient/dashboard"
-          element={
-            <div className="flex items-center justify-center min-h-screen bg-gray-950">
-              <h1 className="text-3xl text-white">
-                Patient Dashboard - Coming Soon!
-              </h1>
-            </div>
-          }
-        />
+        <Route path="/patient/dashboard" element={<PatientDashboard />} />
         <Route
           path="/doctor/dashboard"
           element={
