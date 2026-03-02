@@ -8,6 +8,7 @@ import errorHandler from "./middleware/errorHandler";
 import authRoutes from "./routes/auth.routes";
 import doctorRoutes from "./routes/doctor.routes";
 import appointmentRoutes from "./routes/appointment.routes";
+import aiRoutes from "./routes/ai.routes";
 
 // Load environment variables
 dotenv.config();
@@ -31,6 +32,7 @@ app.use("/api/doctors", doctorRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/appointments", appointmentRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.json({
