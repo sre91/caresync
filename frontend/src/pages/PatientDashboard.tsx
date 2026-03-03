@@ -125,6 +125,9 @@ const PatientDashboard = () => {
         >
           Find Specialist
         </Button>
+        <Button variant="outline" onClick={() => navigate("/health-summary")}>
+          Health Summary
+        </Button>
       </div>
 
       {showBooking && (
