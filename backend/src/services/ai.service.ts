@@ -4,36 +4,45 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-// Check Symptoms
+// ── Check Symptoms ────────────────────────
 export const checkSymptoms = async (symptoms: string): Promise<string> => {
   const response = await groq.chat.completions.create({
     model: "llama3-8b-8192",
     messages: [
       {
         role: "system",
-        content: `You are a helpful medical assistant for CareSync AI.
-        Your job is to analyze patient symptoms and provide:
-        1. Possible conditions (2-3 likely conditions)
-        2. Severity level (Mild / Moderate / Severe)
-        3. Recommended specialist type
-        4. Simple home care tips
-        Keep response clear, simple and under 200 words.
-        Always remind patient to consult a real doctor.
-        Never diagnose definitively.`,
+        content: `You are a compassionate and knowledgeable medical assistant
+        for CareSync AI, a healthcare appointment platform.
+
+        ROLE: Help patients understand their symptoms in simple language.
+
+        ALWAYS provide your response in this exact structure:
+        - Possible Conditions: (list 2-3 likely conditions)
+        - Severity Level: (Mild / Moderate / Severe)
+        - Recommended Specialist: (one specialist type)
+        - Home Care Tips: (2 simple tips)
+        - Important Reminder: (one line about seeing a real doctor)
+
+        RULES:
+        - Use simple language a patient can understand
+        - Never diagnose definitively
+        - Never recommend specific medications
+        - Keep response under 200 words
+        - Be supportive and reassuring in tone`,
       },
       {
         role: "user",
-        content: `Patient symptoms: ${symptoms}`,
+        content: `Please analyze these patient symptoms: ${symptoms}`,
       },
     ],
-    max_tokens: 300,
-    temperature: 0.7,
+    max_tokens: 350,
+    temperature: 0.6,
   });
 
   return response.choices[0]?.message?.content || "Unable to analyze symptoms";
 };
 
-// Suggest Specialist
+// ── Suggest Specialist ────────────────────
 export const suggestSpecialist = async (symptoms: string): Promise<string> => {
   const response = await groq.chat.completions.create({
     model: "llama3-8b-8192",
@@ -41,38 +50,50 @@ export const suggestSpecialist = async (symptoms: string): Promise<string> => {
       {
         role: "system",
         content: `You are a medical specialist recommender for CareSync AI.
-        Based on patient symptoms suggest the most appropriate specialist.
-        Available specialists: Cardiologist, Dermatologist, Neurologist,
-        Orthopedist, Gastroenterologist, Pulmonologist, General Physician.
-        Respond in this exact JSON format:
+
+        ROLE: Match patient symptoms to the most appropriate specialist.
+
+        AVAILABLE SPECIALISTS ONLY:
+        Cardiologist, Dermatologist, Neurologist, Orthopedist,
+        Gastroenterologist, Pulmonologist, General Physician
+
+        RULES:
+        - Choose ONLY from the available specialists list above
+        - Be decisive - recommend exactly ONE specialist
+        - Keep reason under 15 words
+        - Urgency must be exactly: Low, Medium, or High
+
+        RESPOND IN THIS EXACT JSON FORMAT ONLY:
         {
-          "specialist": "specialist name",
-          "reason": "one line reason",
-          "urgency": "Low / Medium / High"
+          "specialist": "specialist name here",
+          "reason": "one line reason under 15 words",
+          "urgency": "Low or Medium or High"
         }
-        Return ONLY the JSON. No extra text.`,
+
+        Return ONLY the JSON object.
+        No explanation. No markdown. No extra text.`,
       },
       {
         role: "user",
         content: `Patient symptoms: ${symptoms}`,
       },
     ],
-    max_tokens: 150,
-    temperature: 0.3,
+    max_tokens: 120,
+    temperature: 0.2,
   });
 
   return response.choices[0]?.message?.content || "{}";
 };
 
-// Generate Health Summary
+// ── Generate Health Summary ───────────────
 export const generateHealthSummary = async (
   patientName: string,
   appointments: any[],
 ): Promise<string> => {
   const appointmentText = appointments
     .map(
-      (apt) =>
-        `Date: ${new Date(apt.date).toLocaleDateString()}, Doctor: ${apt.doctor?.user?.name}, Specialization: ${apt.doctor?.specialization}, Symptoms: ${apt.symptoms || "Not provided"}, Status: ${apt.status}`,
+      (apt, index) =>
+        `${index + 1}. Date: ${new Date(apt.date).toLocaleDateString()}, Specialist: ${apt.doctor?.specialization || "General"}, Symptoms: ${apt.symptoms || "Not recorded"}, Status: ${apt.status}`,
     )
     .join("\n");
 
@@ -81,18 +102,35 @@ export const generateHealthSummary = async (
     messages: [
       {
         role: "system",
-        content: `You are a health summary generator for CareSync AI.
-        Generate a brief, friendly health summary for a patient.
-        Include: visit patterns, common symptoms, health trends.
-        Keep it positive, supportive and under 150 words.
-        Always encourage regular checkups.`,
+        content: `You are a personal health advisor for CareSync AI.
+
+        ROLE: Generate warm, encouraging, personalized health summaries.
+
+        STRUCTURE YOUR RESPONSE AS:
+        - Health Overview: (2-3 sentences about overall health pattern)
+        - Visit Patterns: (what specialists they visit most)
+        - Health Trends: (any patterns you notice)
+        - Encouragement: (one positive, motivating statement)
+        - Recommendation: (one actionable health tip)
+
+        TONE RULES:
+        - Be warm, friendly and supportive
+        - Use the patient name naturally
+        - Be positive and encouraging
+        - Keep under 180 words
+        - Never be alarming or scary`,
       },
       {
         role: "user",
-        content: `Patient: ${patientName}\n\nAppointment History:\n${appointmentText}`,
+        content: `Generate a health summary for patient: ${patientName}
+
+Appointment History:
+${appointmentText}
+
+Total appointments: ${appointments.length}`,
       },
     ],
-    max_tokens: 200,
+    max_tokens: 250,
     temperature: 0.7,
   });
 
