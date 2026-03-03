@@ -8,14 +8,17 @@ import {
   deleteAppointment,
 } from "../controllers/appointment.controller";
 import { protect, authorize } from "../middleware/auth.middleware";
+import { validateAppointment } from "../middleware/validate";
 
 const router = Router();
 
-// All appointment routes need login
-// So we use protect on all!
-
-// ── Patient Routes ────────────────────────
-router.post("/", protect, authorize("patient"), bookAppointment);
+router.post(
+  "/",
+  protect,
+  authorize("patient"),
+  validateAppointment,
+  bookAppointment,
+);
 
 router.get(
   "/my-appointments",
@@ -24,7 +27,6 @@ router.get(
   getPatientAppointments,
 );
 
-// ── Doctor Routes ─────────────────────────
 router.get(
   "/doctor-appointments",
   protect,
@@ -32,7 +34,6 @@ router.get(
   getDoctorAppointments,
 );
 
-// ── Shared Routes ─────────────────────────
 router.get(
   "/:id",
   protect,
@@ -47,7 +48,6 @@ router.put(
   updateAppointmentStatus,
 );
 
-// ── Admin Routes ──────────────────────────
 router.delete("/:id", protect, authorize("admin"), deleteAppointment);
 
 export default router;

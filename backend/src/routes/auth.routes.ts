@@ -1,14 +1,12 @@
 import { Router } from "express";
 import { signup, login, getMe } from "../controllers/auth.controller";
 import { protect } from "../middleware/auth.middleware";
+import { validateSignup, validateLogin } from "../middleware/validate";
 
 const router = Router();
 
-// Public routes - no token needed
-router.post("/signup", signup);
-router.post("/login", login);
-
-// Protected route - token required
+router.post("/signup", validateSignup, signup);
+router.post("/login", validateLogin, login);
 router.get("/me", protect, getMe);
 
 export default router;

@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
 import Appointment from "../models/Appointment.model";
 import Doctor from "../models/Doctor.model";
+import User from "../models/user.model";
+import {
+  sendBookingConfirmation,
+  sendAppointmentConfirmed,
+  sendCancellationEmail,
+} from "../services/email.service";
 
 // Book Appointment
-// Only patients can book
 export const bookAppointment = async (req: any, res: Response) => {
   try {
     const { doctorId, date, time, symptoms } = req.body;
@@ -54,13 +59,28 @@ export const bookAppointment = async (req: any, res: Response) => {
       status: "pending",
     });
 
-    // Populate doctor and patient details
+    // Populate details
     const populated = await Appointment.findById(appointment._id)
       .populate("patient", "name email")
       .populate({
         path: "doctor",
         populate: { path: "user", select: "name email" },
       });
+
+    // Send confirmation email
+    const patientUser = await User.findById(req.user.id);
+    const doctorUser = await User.findById(doctor.user);
+
+    if (patientUser && doctorUser) {
+      sendBookingConfirmation(
+        patientUser.email,
+        patientUser.name,
+        doctorUser.name,
+        new Date(date).toLocaleDateString(),
+        time,
+        doctor.fees,
+      );
+    }
 
     res.status(201).json({
       success: true,
@@ -76,7 +96,6 @@ export const bookAppointment = async (req: any, res: Response) => {
 };
 
 // Get Patient Appointments
-// Patient sees their own appointments
 export const getPatientAppointments = async (req: any, res: Response) => {
   try {
     const appointments = await Appointment.find({ patient: req.user.id })
@@ -100,10 +119,8 @@ export const getPatientAppointments = async (req: any, res: Response) => {
 };
 
 // Get Doctor Appointments
-// Doctor sees their own appointments
 export const getDoctorAppointments = async (req: any, res: Response) => {
   try {
-    // First find doctor profile
     const doctor = await Doctor.findOne({ user: req.user.id });
     if (!doctor) {
       res.status(404).json({
@@ -161,8 +178,6 @@ export const getAppointmentById = async (req: any, res: Response) => {
 };
 
 // Update Appointment Status
-// Doctor can confirm or complete
-// Patient can cancel
 export const updateAppointmentStatus = async (req: any, res: Response) => {
   try {
     const { status } = req.body;
@@ -188,6 +203,34 @@ export const updateAppointmentStatus = async (req: any, res: Response) => {
     appointment.status = status;
     await appointment.save();
 
+    // Send emails based on new status
+    const populatedAppointment = await Appointment.findById(req.params.id)
+      .populate("patient")
+      .populate({ path: "doctor", populate: { path: "user" } });
+
+    const patient = populatedAppointment?.patient as any;
+    const doctor = populatedAppointment?.doctor as any;
+
+    if (status === "confirmed" && patient && doctor) {
+      sendAppointmentConfirmed(
+        patient.email,
+        patient.name,
+        doctor.user.name,
+        new Date(appointment.date).toLocaleDateString(),
+        appointment.time,
+      );
+    }
+
+    if (status === "cancelled" && patient && doctor) {
+      sendCancellationEmail(
+        patient.email,
+        patient.name,
+        doctor.user.name,
+        new Date(appointment.date).toLocaleDateString(),
+        appointment.time,
+      );
+    }
+
     res.status(200).json({
       success: true,
       message: `Appointment ${status} successfully!`,
@@ -202,7 +245,6 @@ export const updateAppointmentStatus = async (req: any, res: Response) => {
 };
 
 // Delete Appointment
-// Only admin can delete
 export const deleteAppointment = async (req: any, res: Response) => {
   try {
     const appointment = await Appointment.findByIdAndDelete(req.params.id);
