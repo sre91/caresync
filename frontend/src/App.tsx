@@ -11,6 +11,7 @@ import PatientDashboard from "./pages/PatientDashboard";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import Doctors from "./pages/Doctors";
 import SymptomChecker from "./pages/SymptomChecker";
+import SpecialistSuggester from "./pages/SpecialistSuggester";
 
 function App() {
   const { isLoading } = useAuth();
@@ -69,6 +70,7 @@ function App() {
         <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
         <Route path="/doctors" element={<Doctors />} />
         <Route path="/symptom-checker" element={<SymptomChecker />} />
+        <Route path="/specialist-suggester" element={<SpecialistSuggester />} />
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

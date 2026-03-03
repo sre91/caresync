@@ -32,3 +32,14 @@ export interface AuthResponse {
   user: User;
   message: string;
 }
+
+export interface AIAnalysis {
+  analysis: string;
+  symptoms: string;
+}
+
+export interface SpecialistSuggestion {
+  specialist: string;
+  reason: string;
+  urgency: "Low" | "Medium" | "High";
+}

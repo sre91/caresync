@@ -109,7 +109,7 @@ const PatientDashboard = () => {
         </Card>
       </div>
 
-      <div className="flex gap-3 mb-6">
+      <div className="flex flex-wrap gap-3 mb-6">
         <Button
           className="bg-blue-600 hover:bg-blue-700"
           onClick={() => navigate("/doctors")}
@@ -118,6 +118,12 @@ const PatientDashboard = () => {
         </Button>
         <Button variant="outline" onClick={() => navigate("/symptom-checker")}>
           AI Symptom Checker
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => navigate("/specialist-suggester")}
+        >
+          Find Specialist
         </Button>
       </div>
 
