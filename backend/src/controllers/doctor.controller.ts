@@ -52,7 +52,7 @@ export const getDoctorById = async (req: Request, res: Response) => {
 };
 
 // Create Doctor Profile
-// Only admin can create doctor profile
+
 export const createDoctor = async (req: any, res: Response) => {
   try {
     const { userId, specialization, experience, fees, about } = req.body;

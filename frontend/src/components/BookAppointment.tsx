@@ -92,7 +92,6 @@ const BookAppointment = ({ doctors, onClose, onSuccess }: Props) => {
             </select>
           </div>
 
-          {/* Select Date */}
           <div className="space-y-2">
             <Label className="text-gray-300">Select Date *</Label>
             <Input
@@ -104,7 +103,6 @@ const BookAppointment = ({ doctors, onClose, onSuccess }: Props) => {
             />
           </div>
 
-          {/* Select Time */}
           <div className="space-y-2">
             <Label className="text-gray-300">Select Time *</Label>
             <div className="grid grid-cols-3 gap-2">
@@ -125,7 +123,6 @@ const BookAppointment = ({ doctors, onClose, onSuccess }: Props) => {
             </div>
           </div>
 
-          {/* Symptoms */}
           <div className="space-y-2">
             <Label className="text-gray-300">Symptoms (optional)</Label>
             <textarea
@@ -137,7 +134,6 @@ const BookAppointment = ({ doctors, onClose, onSuccess }: Props) => {
             />
           </div>
 
-          {/* Buttons */}
           <div className="flex gap-3 pt-2">
             <Button variant="outline" onClick={onClose} className="flex-1">
               Cancel

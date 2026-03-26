@@ -1,15 +1,61 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
 import { doctorService } from "../services/doctor.service";
 import { appointmentService } from "../services/appointment.service";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import toast from "react-hot-toast";
 import type { Doctor } from "../types";
+
+const PARTICLES = [
+  {
+    top: "8%",
+    left: "12%",
+    size: 4,
+    color: "rgba(167,139,250,0.6)",
+    delay: "0s",
+    dur: "3s",
+  },
+  {
+    top: "20%",
+    left: "85%",
+    size: 3,
+    color: "rgba(236,72,153,0.5)",
+    delay: "1s",
+    dur: "4s",
+  },
+  {
+    top: "70%",
+    left: "8%",
+    size: 5,
+    color: "rgba(96,165,250,0.4)",
+    delay: "0.5s",
+    dur: "3.5s",
+  },
+  {
+    top: "80%",
+    left: "90%",
+    size: 3,
+    color: "rgba(167,139,250,0.5)",
+    delay: "2s",
+    dur: "2.5s",
+  },
+];
+
+const TIME_SLOTS = [
+  "09:00 AM",
+  "09:30 AM",
+  "10:00 AM",
+  "10:30 AM",
+  "11:00 AM",
+  "11:30 AM",
+  "02:00 PM",
+  "02:30 PM",
+  "03:00 PM",
+  "03:30 PM",
+  "04:00 PM",
+  "04:30 PM",
+];
 
 const Doctors = () => {
   const { logout } = useAuth();
@@ -27,23 +73,6 @@ const Doctors = () => {
   });
 
   const doctors = data?.doctors || [];
-
-  const timeSlots = [
-    "09:00 AM",
-    "09:30 AM",
-    "10:00 AM",
-    "10:30 AM",
-    "11:00 AM",
-    "11:30 AM",
-    "02:00 PM",
-    "02:30 PM",
-    "03:00 PM",
-    "03:30 PM",
-    "04:00 PM",
-    "04:30 PM",
-  ];
-
-  // Filter doctors by search
   const filteredDoctors = doctors.filter(
     (doc) =>
       doc.user?.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -64,10 +93,6 @@ const Doctors = () => {
         symptoms,
       });
       toast.success("Appointment booked successfully!");
-      setSelectedDoctor(null);
-      setDate("");
-      setTime("");
-      setSymptoms("");
       navigate("/patient/dashboard");
     } catch (error) {
       const err = error as { response?: { data?: { message?: string } } };
@@ -83,148 +108,474 @@ const Doctors = () => {
     toast.success("Logged out!");
   };
 
-  return (
-    <div className="min-h-screen bg-gray-950 p-6">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-blue-500">CareSync AI</h1>
-          <p className="text-gray-400 mt-1">Find and Book a Doctor</p>
-        </div>
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={() => navigate("/patient/dashboard")}
-          >
-            Dashboard
-          </Button>
-          <Button variant="outline" onClick={handleLogout}>
-            Logout
-          </Button>
-        </div>
-      </div>
+  const inputStyle = {
+    width: "100%",
+    background: "rgba(139,92,246,0.08)",
+    border: "1px solid rgba(139,92,246,0.2)",
+    borderRadius: "10px",
+    padding: "10px 14px",
+    color: "white",
+    fontSize: "13px",
+    outline: "none",
+  };
 
-      <div className="mb-6">
-        <Input
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#06001a",
+        fontFamily: "sans-serif",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse at 15% 30%, rgba(120,40,200,0.25) 0%, transparent 55%)",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse at 85% 70%, rgba(200,40,120,0.2) 0%, transparent 55%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      {PARTICLES.map((p, i) => (
+        <div
+          key={i}
+          style={{
+            position: "fixed",
+            top: p.top,
+            left: p.left,
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            borderRadius: "50%",
+            background: p.color,
+            animation: `float ${p.dur} ease-in-out infinite`,
+            animationDelay: p.delay,
+            pointerEvents: "none",
+          }}
+        />
+      ))}
+
+      <div
+        style={{
+          position: "relative",
+          maxWidth: "1100px",
+          margin: "0 auto",
+          padding: "24px 20px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "24px",
+            background: "rgba(139,92,246,0.07)",
+            border: "1px solid rgba(139,92,246,0.2)",
+            borderRadius: "16px",
+            padding: "16px 24px",
+            backdropFilter: "blur(20px)",
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontSize: "22px",
+                fontWeight: 500,
+                background: "linear-gradient(90deg, #a78bfa, #ec4899)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              CareSync AI
+            </div>
+            <div
+              style={{
+                color: "rgba(167,139,250,0.5)",
+                fontSize: "12px",
+                marginTop: "2px",
+              }}
+            >
+              Find and Book a Doctor
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button
+              onClick={() => navigate("/patient/dashboard")}
+              style={{
+                background: "rgba(139,92,246,0.1)",
+                border: "1px solid rgba(139,92,246,0.2)",
+                borderRadius: "8px",
+                padding: "8px 16px",
+                color: "rgba(167,139,250,0.8)",
+                fontSize: "12px",
+                cursor: "pointer",
+              }}
+            >
+              Dashboard
+            </button>
+            <button
+              onClick={handleLogout}
+              style={{
+                background: "rgba(139,92,246,0.1)",
+                border: "1px solid rgba(139,92,246,0.2)",
+                borderRadius: "8px",
+                padding: "8px 16px",
+                color: "rgba(167,139,250,0.8)",
+                fontSize: "12px",
+                cursor: "pointer",
+              }}
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+
+        {/* Search */}
+        <input
           placeholder="Search by doctor name or specialization..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white max-w-md"
+          style={{
+            ...inputStyle,
+            marginBottom: "20px",
+            padding: "12px 16px",
+            fontSize: "14px",
+          }}
         />
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div>
-          <h2 className="text-white font-semibold text-lg mb-4">
-            Available Doctors ({filteredDoctors.length})
-          </h2>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "20px",
+          }}
+        >
+          <div>
+            <h2
+              style={{
+                color: "white",
+                fontSize: "16px",
+                fontWeight: 500,
+                marginBottom: "16px",
+              }}
+            >
+              Available Doctors ({filteredDoctors.length})
+            </h2>
 
-          {filteredDoctors.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-400">No doctors found!</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredDoctors.map((doctor) => (
-                <Card
-                  key={doctor._id}
-                  className={`cursor-pointer transition-all border-2 ${
-                    selectedDoctor?._id === doctor._id
-                      ? "border-blue-500 bg-gray-800"
-                      : "border-gray-800 bg-gray-900 hover:border-gray-600"
-                  }`}
-                  onClick={() => setSelectedDoctor(doctor)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-4">
-                      {/* Avatar */}
-                      <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center text-white text-xl font-bold shrink-0">
-                        {doctor.user?.name?.charAt(0) || "D"}
+            {filteredDoctors.length === 0 ? (
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "40px",
+                  background: "rgba(139,92,246,0.05)",
+                  border: "1px solid rgba(139,92,246,0.15)",
+                  borderRadius: "16px",
+                }}
+              >
+                <div style={{ fontSize: "40px", marginBottom: "12px" }}>👨‍⚕️</div>
+                <p style={{ color: "rgba(167,139,250,0.5)", fontSize: "14px" }}>
+                  No doctors found!
+                </p>
+              </div>
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px",
+                }}
+              >
+                {filteredDoctors.map((doc) => (
+                  <div
+                    key={doc._id}
+                    onClick={() => setSelectedDoctor(doc)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "14px",
+                      padding: "16px",
+                      background:
+                        selectedDoctor?._id === doc._id
+                          ? "rgba(139,92,246,0.15)"
+                          : "rgba(139,92,246,0.05)",
+                      border: `1px solid ${
+                        selectedDoctor?._id === doc._id
+                          ? "rgba(139,92,246,0.5)"
+                          : "rgba(139,92,246,0.15)"
+                      }`,
+                      borderRadius: "14px",
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (selectedDoctor?._id !== doc._id) {
+                        (e.currentTarget as HTMLDivElement).style.borderColor =
+                          "rgba(139,92,246,0.35)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (selectedDoctor?._id !== doc._id) {
+                        (e.currentTarget as HTMLDivElement).style.borderColor =
+                          "rgba(139,92,246,0.15)";
+                      }
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "48px",
+                        height: "48px",
+                        borderRadius: "50%",
+                        background: "linear-gradient(135deg, #7c3aed, #ec4899)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "white",
+                        fontSize: "18px",
+                        fontWeight: 500,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {doc.user?.name?.charAt(0) || "D"}
+                    </div>
+
+                    <div style={{ flex: 1 }}>
+                      <p
+                        style={{
+                          color: "white",
+                          fontSize: "14px",
+                          fontWeight: 500,
+                        }}
+                      >
+                        Dr. {doc.user?.name}
+                      </p>
+                      <p
+                        style={{
+                          color: "#a78bfa",
+                          fontSize: "12px",
+                          marginTop: "2px",
+                        }}
+                      >
+                        {doc.specialization}
+                      </p>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "12px",
+                          marginTop: "4px",
+                        }}
+                      >
+                        <span
+                          style={{
+                            color: "rgba(167,139,250,0.5)",
+                            fontSize: "11px",
+                          }}
+                        >
+                          {doc.experience} yrs exp
+                        </span>
+                        <span
+                          style={{
+                            color: "#34d399",
+                            fontSize: "11px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          Rs. {doc.fees}
+                        </span>
                       </div>
-
-                      <div className="flex-1">
-                        <h3 className="text-white font-semibold text-lg">
-                          Dr. {doctor.user?.name}
-                        </h3>
-                        <p className="text-blue-400 text-sm">
-                          {doctor.specialization}
+                      {doc.about && (
+                        <p
+                          style={{
+                            color: "rgba(167,139,250,0.4)",
+                            fontSize: "11px",
+                            marginTop: "4px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {doc.about}
                         </p>
-                        <div className="flex gap-4 mt-2">
-                          <span className="text-gray-400 text-sm">
-                            {doctor.experience} years exp
-                          </span>
-                          <span className="text-green-400 text-sm font-medium">
-                            Rs. {doctor.fees}
-                          </span>
-                        </div>
-                        {doctor.about && (
-                          <p className="text-gray-500 text-sm mt-2 line-clamp-2">
-                            {doctor.about}
-                          </p>
-                        )}
-                      </div>
-
-                      {selectedDoctor?._id === doctor._id && (
-                        <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center shrink-0">
-                          <span className="text-white text-xs">✓</span>
-                        </div>
                       )}
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
 
-        <div>
-          <h2 className="text-white font-semibold text-lg mb-4">
-            Book Appointment
-          </h2>
+                    {selectedDoctor?._id === doc._id && (
+                      <div
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          borderRadius: "50%",
+                          background:
+                            "linear-gradient(135deg, #7c3aed, #ec4899)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "white",
+                          fontSize: "12px",
+                          flexShrink: 0,
+                        }}
+                      >
+                        ✓
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-          <Card className="bg-gray-900 border-gray-800">
-            <CardContent className="p-6 space-y-5">
+          {/* Right - Booking Form */}
+          <div>
+            <h2
+              style={{
+                color: "white",
+                fontSize: "16px",
+                fontWeight: 500,
+                marginBottom: "16px",
+              }}
+            >
+              Book Appointment
+            </h2>
+
+            <div
+              style={{
+                background: "rgba(139,92,246,0.07)",
+                border: "1px solid rgba(139,92,246,0.2)",
+                borderRadius: "20px",
+                padding: "24px",
+                backdropFilter: "blur(10px)",
+              }}
+            >
               {selectedDoctor ? (
-                <div className="p-3 bg-blue-950 rounded-lg border border-blue-800">
-                  <p className="text-blue-300 text-sm">Selected Doctor</p>
-                  <p className="text-white font-medium mt-1">
+                <div
+                  style={{
+                    padding: "12px 16px",
+                    background: "rgba(139,92,246,0.15)",
+                    border: "1px solid rgba(139,92,246,0.3)",
+                    borderRadius: "10px",
+                    marginBottom: "20px",
+                  }}
+                >
+                  <p
+                    style={{ color: "rgba(167,139,250,0.6)", fontSize: "11px" }}
+                  >
+                    Selected Doctor
+                  </p>
+                  <p
+                    style={{
+                      color: "white",
+                      fontSize: "14px",
+                      fontWeight: 500,
+                      marginTop: "4px",
+                    }}
+                  >
                     Dr. {selectedDoctor.user?.name}
                   </p>
-                  <p className="text-blue-400 text-sm">
+                  <p
+                    style={{
+                      color: "#a78bfa",
+                      fontSize: "12px",
+                      marginTop: "2px",
+                    }}
+                  >
                     {selectedDoctor.specialization} | Rs. {selectedDoctor.fees}
                   </p>
                 </div>
               ) : (
-                <div className="p-3 bg-gray-800 rounded-lg border border-gray-700">
-                  <p className="text-gray-400 text-sm text-center">
+                <div
+                  style={{
+                    padding: "12px 16px",
+                    background: "rgba(139,92,246,0.05)",
+                    border: "1px solid rgba(139,92,246,0.15)",
+                    borderRadius: "10px",
+                    marginBottom: "20px",
+                    textAlign: "center",
+                  }}
+                >
+                  <p
+                    style={{ color: "rgba(167,139,250,0.4)", fontSize: "13px" }}
+                  >
                     Select a doctor from the list!
                   </p>
                 </div>
               )}
 
-              <div className="space-y-2">
-                <Label className="text-gray-300">Select Date *</Label>
-                <Input
+              {/* Date */}
+              <div style={{ marginBottom: "16px" }}>
+                <label
+                  style={{
+                    color: "rgba(167,139,250,0.8)",
+                    fontSize: "13px",
+                    display: "block",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Select Date
+                </label>
+                <input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   min={new Date().toISOString().split("T")[0]}
-                  className="bg-gray-800 border-gray-700 text-white"
+                  style={inputStyle}
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-gray-300">Select Time *</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {timeSlots.map((slot) => (
+              {/* Time Slots */}
+              <div style={{ marginBottom: "16px" }}>
+                <label
+                  style={{
+                    color: "rgba(167,139,250,0.8)",
+                    fontSize: "13px",
+                    display: "block",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Select Time
+                </label>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(3,1fr)",
+                    gap: "6px",
+                  }}
+                >
+                  {TIME_SLOTS.map((slot) => (
                     <button
                       key={slot}
                       onClick={() => setTime(slot)}
-                      className={`py-2 px-2 rounded-md text-xs font-medium transition-colors
-                        ${
+                      style={{
+                        padding: "7px 4px",
+                        borderRadius: "8px",
+                        fontSize: "11px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                        background:
                           time === slot
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700"
-                        }`}
+                            ? "linear-gradient(135deg, #7c3aed, #ec4899)"
+                            : "rgba(139,92,246,0.08)",
+                        border:
+                          time === slot
+                            ? "none"
+                            : "1px solid rgba(139,92,246,0.2)",
+                        color:
+                          time === slot ? "white" : "rgba(167,139,250,0.7)",
+                        boxShadow:
+                          time === slot
+                            ? "0 0 15px rgba(124,58,237,0.3)"
+                            : "none",
+                      }}
                     >
                       {slot}
                     </button>
@@ -232,46 +583,126 @@ const Doctors = () => {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-gray-300">Symptoms (optional)</Label>
+              <div style={{ marginBottom: "20px" }}>
+                <label
+                  style={{
+                    color: "rgba(167,139,250,0.8)",
+                    fontSize: "13px",
+                    display: "block",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Symptoms (optional)
+                </label>
                 <textarea
                   value={symptoms}
                   onChange={(e) => setSymptoms(e.target.value)}
                   placeholder="Describe your symptoms..."
                   rows={3}
-                  className="w-full rounded-md border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{
+                    ...inputStyle,
+                    resize: "none",
+                    fontFamily: "sans-serif",
+                  }}
                 />
               </div>
 
-              <Button
-                onClick={handleBook}
-                disabled={loading || !selectedDoctor || !date || !time}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-              >
-                {loading ? "Booking..." : "Confirm Booking"}
-              </Button>
-
               {selectedDoctor && date && time && (
-                <div className="p-3 bg-gray-800 rounded-lg border border-gray-700 text-sm">
-                  <p className="text-gray-400 font-medium mb-2">
+                <div
+                  style={{
+                    padding: "12px 16px",
+                    background: "rgba(139,92,246,0.08)",
+                    border: "1px solid rgba(139,92,246,0.2)",
+                    borderRadius: "10px",
+                    marginBottom: "16px",
+                    fontSize: "12px",
+                  }}
+                >
+                  <p
+                    style={{
+                      color: "rgba(167,139,250,0.6)",
+                      marginBottom: "6px",
+                      fontWeight: 500,
+                    }}
+                  >
                     Booking Summary
                   </p>
-                  <p className="text-white">
+                  <p
+                    style={{
+                      color: "rgba(255,255,255,0.7)",
+                      marginBottom: "3px",
+                    }}
+                  >
                     Doctor : Dr. {selectedDoctor.user?.name}
                   </p>
-                  <p className="text-white">
+                  <p
+                    style={{
+                      color: "rgba(255,255,255,0.7)",
+                      marginBottom: "3px",
+                    }}
+                  >
                     Date : {new Date(date).toLocaleDateString()}
                   </p>
-                  <p className="text-white">Time : {time}</p>
-                  <p className="text-green-400 font-medium mt-1">
+                  <p
+                    style={{
+                      color: "rgba(255,255,255,0.7)",
+                      marginBottom: "3px",
+                    }}
+                  >
+                    Time : {time}
+                  </p>
+                  <p style={{ color: "#34d399", fontWeight: 500 }}>
                     Fees : Rs. {selectedDoctor.fees}
                   </p>
                 </div>
               )}
-            </CardContent>
-          </Card>
+
+              {/* Book Button */}
+              <button
+                onClick={handleBook}
+                disabled={loading || !selectedDoctor || !date || !time}
+                style={{
+                  width: "100%",
+                  background:
+                    loading || !selectedDoctor || !date || !time
+                      ? "rgba(124,58,237,0.3)"
+                      : "linear-gradient(135deg, #7c3aed, #ec4899)",
+                  border: "none",
+                  borderRadius: "10px",
+                  padding: "13px",
+                  color: "white",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  cursor:
+                    loading || !selectedDoctor || !date || !time
+                      ? "not-allowed"
+                      : "pointer",
+                  boxShadow:
+                    loading || !selectedDoctor || !date || !time
+                      ? "none"
+                      : "0 0 25px rgba(124,58,237,0.4)",
+                  transition: "all 0.2s",
+                }}
+              >
+                {loading ? "Booking..." : "Confirm Booking"}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
+        }
+        input::placeholder, textarea::placeholder {
+          color: rgba(167,139,250,0.3);
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+          filter: invert(0.5) sepia(1) saturate(5) hue-rotate(220deg);
+        }
+      `}</style>
     </div>
   );
 };

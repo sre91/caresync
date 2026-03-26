@@ -4,39 +4,52 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
 import { aiService } from "../services/ai.service";
 import { doctorService } from "../services/doctor.service";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import toast from "react-hot-toast";
 import type { SpecialistSuggestion } from "../types";
 
-const specialists = [
+const PARTICLES = [
   {
-    name: "Cardiologist",
-    icon: "heart",
-    desc: "Heart and cardiovascular system",
+    top: "8%",
+    left: "12%",
+    size: 4,
+    color: "rgba(167,139,250,0.6)",
+    delay: "0s",
+    dur: "3s",
   },
   {
-    name: "Dermatologist",
-    icon: "skin",
-    desc: "Skin, hair and nail conditions",
-  },
-  { name: "Neurologist", icon: "brain", desc: "Brain and nervous system" },
-  { name: "Orthopedist", icon: "bone", desc: "Bones, joints and muscles" },
-  {
-    name: "Gastroenterologist",
-    icon: "stomach",
-    desc: "Digestive system disorders",
+    top: "20%",
+    left: "85%",
+    size: 3,
+    color: "rgba(236,72,153,0.5)",
+    delay: "1s",
+    dur: "4s",
   },
   {
-    name: "Pulmonologist",
-    icon: "lungs",
-    desc: "Lungs and respiratory system",
+    top: "70%",
+    left: "8%",
+    size: 5,
+    color: "rgba(96,165,250,0.4)",
+    delay: "0.5s",
+    dur: "3.5s",
   },
   {
-    name: "General Physician",
-    icon: "doctor",
-    desc: "General health and common illness",
+    top: "80%",
+    left: "90%",
+    size: 3,
+    color: "rgba(167,139,250,0.5)",
+    delay: "2s",
+    dur: "2.5s",
   },
+];
+
+const SPECIALISTS = [
+  { name: "Cardiologist", desc: "Heart and cardiovascular system" },
+  { name: "Dermatologist", desc: "Skin, hair and nail conditions" },
+  { name: "Neurologist", desc: "Brain and nervous system" },
+  { name: "Orthopedist", desc: "Bones, joints and muscles" },
+  { name: "Gastroenterologist", desc: "Digestive system disorders" },
+  { name: "Pulmonologist", desc: "Lungs and respiratory system" },
+  { name: "General Physician", desc: "General health and common illness" },
 ];
 
 const SpecialistSuggester = () => {
@@ -49,7 +62,6 @@ const SpecialistSuggester = () => {
   const [loading, setLoading] = useState(false);
   const [selectedSpec, setSelectedSpec] = useState<string | null>(null);
 
-  // Get all doctors to filter by specialization
   const { data: doctorsData } = useQuery({
     queryKey: ["doctors"],
     queryFn: doctorService.getAll,
@@ -82,208 +94,523 @@ const SpecialistSuggester = () => {
     }
   };
 
-  const getUrgencyColor = (urgency: string) => {
+  const getUrgencyStyle = (urgency: string) => {
     switch (urgency) {
       case "High":
-        return "text-red-400 bg-red-950 border-red-800";
+        return {
+          bg: "rgba(248,113,113,0.15)",
+          color: "#f87171",
+          border: "rgba(248,113,113,0.3)",
+        };
       case "Medium":
-        return "text-yellow-400 bg-yellow-950 border-yellow-800";
+        return {
+          bg: "rgba(251,191,36,0.15)",
+          color: "#fbbf24",
+          border: "rgba(251,191,36,0.3)",
+        };
       case "Low":
-        return "text-green-400 bg-green-950 border-green-800";
+        return {
+          bg: "rgba(52,211,153,0.15)",
+          color: "#34d399",
+          border: "rgba(52,211,153,0.3)",
+        };
       default:
-        return "text-gray-400 bg-gray-800 border-gray-700";
+        return {
+          bg: "rgba(167,139,250,0.15)",
+          color: "#a78bfa",
+          border: "rgba(167,139,250,0.3)",
+        };
     }
   };
 
-  // Filter doctors by selected specialization
   const filteredDoctors = selectedSpec
     ? doctors.filter((doc) =>
         doc.specialization.toLowerCase().includes(selectedSpec.toLowerCase()),
       )
     : [];
 
+  const navBtn = {
+    background: "rgba(139,92,246,0.1)",
+    border: "1px solid rgba(139,92,246,0.2)",
+    borderRadius: "8px",
+    padding: "8px 16px",
+    color: "rgba(167,139,250,0.8)",
+    fontSize: "12px",
+    cursor: "pointer",
+  };
+
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-blue-500">CareSync AI</h1>
-          <p className="text-gray-400 mt-1">AI Specialist Suggester</p>
-        </div>
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={() => navigate("/patient/dashboard")}
-          >
-            Dashboard
-          </Button>
-          <Button variant="outline" onClick={handleLogout}>
-            Logout
-          </Button>
-        </div>
-      </div>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#06001a",
+        fontFamily: "sans-serif",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse at 15% 30%, rgba(120,40,200,0.25) 0%, transparent 55%)",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse at 85% 70%, rgba(200,40,120,0.2) 0%, transparent 55%)",
+          pointerEvents: "none",
+        }}
+      />
 
-      <div className="max-w-4xl mx-auto">
-        {/* Symptom Input */}
-        <Card className="bg-gray-900 border-gray-800 mb-6">
-          <CardHeader>
-            <CardTitle className="text-white">
-              What are your symptoms?
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <textarea
-              value={symptoms}
-              onChange={(e) => setSymptoms(e.target.value)}
-              placeholder="Describe your symptoms in detail..."
-              rows={4}
-              className="w-full rounded-md border border-gray-700 bg-gray-800 px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            />
-            <Button
-              onClick={handleGetSuggestion}
-              disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 h-11"
+      {PARTICLES.map((p, i) => (
+        <div
+          key={i}
+          style={{
+            position: "fixed",
+            top: p.top,
+            left: p.left,
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            borderRadius: "50%",
+            background: p.color,
+            animation: `float ${p.dur} ease-in-out infinite`,
+            animationDelay: p.delay,
+            pointerEvents: "none",
+          }}
+        />
+      ))}
+
+      <div
+        style={{
+          position: "relative",
+          maxWidth: "900px",
+          margin: "0 auto",
+          padding: "24px 20px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "24px",
+            background: "rgba(139,92,246,0.07)",
+            border: "1px solid rgba(139,92,246,0.2)",
+            borderRadius: "16px",
+            padding: "16px 24px",
+            backdropFilter: "blur(20px)",
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontSize: "22px",
+                fontWeight: 500,
+                background: "linear-gradient(90deg, #a78bfa, #ec4899)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
             >
-              {loading ? "AI is thinking..." : "Find Best Specialist"}
-            </Button>
-          </CardContent>
-        </Card>
+              CareSync AI
+            </div>
+            <div
+              style={{
+                color: "rgba(167,139,250,0.5)",
+                fontSize: "12px",
+                marginTop: "2px",
+              }}
+            >
+              AI Specialist Suggester
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button
+              onClick={() => navigate("/patient/dashboard")}
+              style={navBtn}
+            >
+              Dashboard
+            </button>
+            <button onClick={handleLogout} style={navBtn}>
+              Logout
+            </button>
+          </div>
+        </div>
 
-        {/* AI Suggestion Result */}
+        <div
+          style={{
+            background: "rgba(139,92,246,0.07)",
+            border: "1px solid rgba(139,92,246,0.2)",
+            borderRadius: "20px",
+            padding: "24px",
+            backdropFilter: "blur(10px)",
+            marginBottom: "20px",
+          }}
+        >
+          <h2
+            style={{
+              color: "white",
+              fontSize: "18px",
+              fontWeight: 500,
+              marginBottom: "16px",
+            }}
+          >
+            What are your symptoms?
+          </h2>
+          <textarea
+            value={symptoms}
+            onChange={(e) => setSymptoms(e.target.value)}
+            placeholder="Describe your symptoms in detail..."
+            rows={4}
+            style={{
+              width: "100%",
+              background: "rgba(139,92,246,0.08)",
+              border: "1px solid rgba(139,92,246,0.2)",
+              borderRadius: "12px",
+              padding: "14px 16px",
+              color: "white",
+              fontSize: "14px",
+              outline: "none",
+              resize: "none",
+              fontFamily: "sans-serif",
+              marginBottom: "16px",
+            }}
+            onFocus={(e) =>
+              (e.target.style.borderColor = "rgba(139,92,246,0.5)")
+            }
+            onBlur={(e) =>
+              (e.target.style.borderColor = "rgba(139,92,246,0.2)")
+            }
+          />
+          <button
+            onClick={handleGetSuggestion}
+            disabled={loading}
+            style={{
+              width: "100%",
+              background: loading
+                ? "rgba(124,58,237,0.3)"
+                : "linear-gradient(135deg, #7c3aed, #ec4899)",
+              border: "none",
+              borderRadius: "10px",
+              padding: "13px",
+              color: "white",
+              fontSize: "14px",
+              fontWeight: 500,
+              cursor: loading ? "not-allowed" : "pointer",
+              boxShadow: loading ? "none" : "0 0 25px rgba(124,58,237,0.3)",
+            }}
+          >
+            {loading ? "AI is thinking..." : "Find Best Specialist"}
+          </button>
+        </div>
+
         {suggestion && !loading && (
-          <Card className="bg-gray-900 border-blue-800 border-2 mb-6">
-            <CardHeader>
-              <CardTitle className="text-blue-400">AI Recommendation</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-start justify-between gap-4 mb-4">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">
-                    Best specialist for your symptoms
-                  </p>
-                  <h2 className="text-3xl font-bold text-white">
-                    {suggestion.specialist}
-                  </h2>
-                  <p className="text-gray-400 mt-2">{suggestion.reason}</p>
-                </div>
-                <div
-                  className={`px-4 py-2 rounded-lg border text-sm font-bold shrink-0 ${getUrgencyColor(suggestion.urgency)}`}
+          <div
+            style={{
+              background: "rgba(139,92,246,0.1)",
+              border: "2px solid rgba(139,92,246,0.4)",
+              borderRadius: "20px",
+              padding: "24px",
+              backdropFilter: "blur(10px)",
+              marginBottom: "20px",
+              animation: "fadeUp 0.5s ease forwards",
+            }}
+          >
+            <p
+              style={{
+                color: "rgba(167,139,250,0.5)",
+                fontSize: "12px",
+                marginBottom: "8px",
+              }}
+            >
+              AI Recommendation
+            </p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                gap: "16px",
+                marginBottom: "16px",
+              }}
+            >
+              <div>
+                <h2
+                  style={{ color: "white", fontSize: "28px", fontWeight: 500 }}
                 >
-                  {suggestion.urgency} Urgency
+                  {suggestion.specialist}
+                </h2>
+                <p
+                  style={{
+                    color: "rgba(167,139,250,0.6)",
+                    fontSize: "13px",
+                    marginTop: "6px",
+                  }}
+                >
+                  {suggestion.reason}
+                </p>
+              </div>
+              <div
+                style={{
+                  background: getUrgencyStyle(suggestion.urgency).bg,
+                  color: getUrgencyStyle(suggestion.urgency).color,
+                  border: `1px solid ${getUrgencyStyle(suggestion.urgency).border}`,
+                  padding: "6px 16px",
+                  borderRadius: "20px",
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  flexShrink: 0,
+                }}
+              >
+                {suggestion.urgency} Urgency
+              </div>
+            </div>
+
+            {filteredDoctors.length > 0 ? (
+              <div>
+                <p
+                  style={{
+                    color: "rgba(167,139,250,0.5)",
+                    fontSize: "12px",
+                    marginBottom: "12px",
+                  }}
+                >
+                  Available {suggestion.specialist}s in CareSync AI
+                </p>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                  }}
+                >
+                  {filteredDoctors.map((doc) => (
+                    <div
+                      key={doc._id}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "12px 16px",
+                        background: "rgba(139,92,246,0.08)",
+                        border: "1px solid rgba(139,92,246,0.2)",
+                        borderRadius: "12px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "12px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: "38px",
+                            height: "38px",
+                            borderRadius: "50%",
+                            background:
+                              "linear-gradient(135deg, #7c3aed, #ec4899)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "white",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {doc.user?.name?.charAt(0)}
+                        </div>
+                        <div>
+                          <p
+                            style={{
+                              color: "white",
+                              fontSize: "13px",
+                              fontWeight: 500,
+                            }}
+                          >
+                            Dr. {doc.user?.name}
+                          </p>
+                          <p
+                            style={{
+                              color: "rgba(167,139,250,0.5)",
+                              fontSize: "11px",
+                              marginTop: "2px",
+                            }}
+                          >
+                            {doc.experience} yrs | Rs. {doc.fees}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => navigate("/doctors")}
+                        style={{
+                          background:
+                            "linear-gradient(135deg, #7c3aed, #ec4899)",
+                          border: "none",
+                          borderRadius: "8px",
+                          padding: "6px 14px",
+                          color: "white",
+                          fontSize: "12px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Book Now
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
-
-              {/* Matching Doctors */}
-              {filteredDoctors.length > 0 ? (
-                <div>
-                  <p className="text-gray-400 text-sm mb-3">
-                    Available {suggestion.specialist}s in CareSync AI
-                  </p>
-                  <div className="space-y-3">
-                    {filteredDoctors.map((doc) => (
-                      <div
-                        key={doc._id}
-                        className="flex items-center justify-between p-3 bg-gray-800 rounded-lg border border-gray-700"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
-                            {doc.user?.name?.charAt(0)}
-                          </div>
-                          <div>
-                            <p className="text-white font-medium">
-                              Dr. {doc.user?.name}
-                            </p>
-                            <p className="text-gray-400 text-sm">
-                              {doc.experience} years | Rs. {doc.fees}
-                            </p>
-                          </div>
-                        </div>
-                        <Button
-                          className="bg-blue-600 hover:bg-blue-700 text-sm"
-                          onClick={() => navigate("/doctors")}
-                        >
-                          Book Now
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="p-4 bg-gray-800 rounded-lg border border-gray-700 text-center">
-                  <p className="text-gray-400 text-sm">
-                    No {suggestion.specialist} available yet!
-                  </p>
-                  <Button
-                    className="mt-3 bg-blue-600 hover:bg-blue-700"
-                    onClick={() => navigate("/doctors")}
-                  >
-                    Browse All Doctors
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+            ) : (
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "16px",
+                  background: "rgba(139,92,246,0.05)",
+                  borderRadius: "10px",
+                }}
+              >
+                <p style={{ color: "rgba(167,139,250,0.5)", fontSize: "13px" }}>
+                  No {suggestion.specialist} available yet!
+                </p>
+                <button
+                  onClick={() => navigate("/doctors")}
+                  style={{
+                    background: "linear-gradient(135deg, #7c3aed, #ec4899)",
+                    border: "none",
+                    borderRadius: "8px",
+                    padding: "8px 20px",
+                    color: "white",
+                    fontSize: "13px",
+                    cursor: "pointer",
+                    marginTop: "10px",
+                  }}
+                >
+                  Browse All Doctors
+                </button>
+              </div>
+            )}
+          </div>
         )}
 
-        {/* All Specialists Grid */}
         <div>
-          <h2 className="text-white font-semibold text-lg mb-4">
+          <h2
+            style={{
+              color: "white",
+              fontSize: "16px",
+              fontWeight: 500,
+              marginBottom: "16px",
+            }}
+          >
             Browse by Specialist
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {specialists.map((spec) => {
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+              gap: "12px",
+            }}
+          >
+            {SPECIALISTS.map((spec) => {
               const availableDocs = doctors.filter((doc) =>
                 doc.specialization
                   .toLowerCase()
                   .includes(spec.name.toLowerCase()),
               );
-
-              const isSelected = selectedSpec === spec.name;
               const isAISuggested = suggestion?.specialist === spec.name;
+              const isSelected = selectedSpec === spec.name;
 
               return (
-                <Card
+                <div
                   key={spec.name}
-                  className={`cursor-pointer transition-all border-2 ${
-                    isAISuggested
-                      ? "border-blue-500 bg-gray-800"
-                      : isSelected
-                        ? "border-gray-600 bg-gray-800"
-                        : "border-gray-800 bg-gray-900 hover:border-gray-600"
-                  }`}
                   onClick={() =>
                     setSelectedSpec(
                       selectedSpec === spec.name ? null : spec.name,
                     )
                   }
+                  style={{
+                    padding: "16px",
+                    background: isAISuggested
+                      ? "rgba(139,92,246,0.15)"
+                      : isSelected
+                        ? "rgba(139,92,246,0.1)"
+                        : "rgba(139,92,246,0.05)",
+                    border: `1px solid ${
+                      isAISuggested
+                        ? "rgba(139,92,246,0.5)"
+                        : isSelected
+                          ? "rgba(139,92,246,0.35)"
+                          : "rgba(139,92,246,0.15)"
+                    }`,
+                    borderRadius: "14px",
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                    position: "relative",
+                  }}
                 >
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="text-white font-semibold">
-                          {spec.name}
-                        </h3>
-                        <p className="text-gray-400 text-sm mt-1">
-                          {spec.desc}
-                        </p>
-                        <p className="text-blue-400 text-sm mt-2">
-                          {availableDocs.length} doctor
-                          {availableDocs.length !== 1 ? "s" : ""} available
-                        </p>
-                      </div>
-                      {isAISuggested && (
-                        <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded-full">
-                          AI Pick
-                        </span>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                  {isAISuggested && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "-8px",
+                        right: "12px",
+                        background: "linear-gradient(135deg, #7c3aed, #ec4899)",
+                        color: "white",
+                        fontSize: "9px",
+                        padding: "2px 8px",
+                        borderRadius: "10px",
+                        fontWeight: 500,
+                      }}
+                    >
+                      AI Pick
+                    </span>
+                  )}
+                  <p
+                    style={{
+                      color: "white",
+                      fontSize: "13px",
+                      fontWeight: 500,
+                      marginBottom: "4px",
+                    }}
+                  >
+                    {spec.name}
+                  </p>
+                  <p
+                    style={{
+                      color: "rgba(167,139,250,0.4)",
+                      fontSize: "11px",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    {spec.desc}
+                  </p>
+                  <p style={{ color: "#a78bfa", fontSize: "11px" }}>
+                    {availableDocs.length} doctor
+                    {availableDocs.length !== 1 ? "s" : ""} available
+                  </p>
+                </div>
               );
             })}
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
+        }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        textarea::placeholder { color: rgba(167,139,250,0.3); }
+      `}</style>
     </div>
   );
 };

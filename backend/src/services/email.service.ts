@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// ── Send Appointment Confirmation ─────────
+// Send Appointment Confirmation
 export const sendBookingConfirmation = async (
   patientEmail: string,
   patientName: string,
@@ -61,7 +61,7 @@ export const sendBookingConfirmation = async (
   }
 };
 
-// ── Send Appointment Confirmed by Doctor ──
+// Send Appointment Confirmed by Doctor
 export const sendAppointmentConfirmed = async (
   patientEmail: string,
   patientName: string,
@@ -108,7 +108,7 @@ export const sendAppointmentConfirmed = async (
   }
 };
 
-// ── Send Cancellation Email ───────────────
+// Send Cancellation Email
 export const sendCancellationEmail = async (
   patientEmail: string,
   patientName: string,
