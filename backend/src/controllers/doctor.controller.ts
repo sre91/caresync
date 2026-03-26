@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Doctor from "../models/Doctor.model";
+import Doctor from "../models/doctor.model";
 import User from "../models/user.model";
 
 // doc list

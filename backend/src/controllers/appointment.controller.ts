@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import Appointment from "../models/Appointment.model";
-import Doctor from "../models/Doctor.model";
+import Appointment from "../models/appointment.model";
+import Doctor from "../models/doctor.model";
 import User from "../models/user.model";
 import {
   sendBookingConfirmation,
