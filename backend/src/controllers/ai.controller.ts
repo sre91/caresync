@@ -4,7 +4,7 @@ import {
   suggestSpecialist,
   generateHealthSummary,
 } from "../services/ai.service";
-import Appointment from "../models/Appointment.model";
+import Appointment from "../models/appointment.model";
 
 // Check Symptoms
 export const analyzeSymptoms = async (req: any, res: Response) => {
